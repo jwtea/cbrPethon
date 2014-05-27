@@ -1,0 +1,70 @@
+Order ID,Customer ID,prodID,Category,Product Name
+1,c1,p1,Dollshouse,Mia Casa with Dolly
+,c1,p2,Dollshouse,Bella's House with Furniture
+2,c2,p4,Dollshouse,Sweetheart Cottage with Furniture
+,c2,p11,Castles,Lionheart Castle
+,c2,p13,Castles,Three Wishes Castle
+,c2,p1,Dollshouse,Mia Casa with Dolly
+3,c3,p2,Dollshouse,Bella's House with Furniture
+,c3,p20,Honeybake,Oven & Hob RED 
+,c3,p16,Honeybake,Camper Mini Stove Set
+,c3,p9,Castles,Camelot Castle Red
+4,c4,p6,Dollshouse,Lavender House NEW
+,c4,p1,Dollshouse,Mia Casa with Dolly
+,c4,p2,Dollshouse,Bella's House with Furniture
+,c4,p19,Honeybake,Chocolate Box
+,c4,p20,Honeybake,Oven & Hob RED 
+,c4,p21,Honeybake,Trinket Boxes
+5,c5,p1,Dollshouse,Mia Casa with Dolly
+,c5,p2,Dollshouse,Bella's House with Furniture
+6,c6,p11,Castles,Lionheart Castle
+,c6,p12,Castles,Fairybelle Palace
+,c6,p13,Castles,Three Wishes Castle
+,c6,p23,Pirateships,Pirate Adventure!
+,c6,p24,Pirateships,Buccaneer's Pirate Fort
+7,c7,p1,Dollshouse,Mia Casa with Dolly
+,c7,p5,Dollshouse,Lavender House 
+,c7,p23,Pirateships,Pirate Adventure!
+,c7,p24,Pirateships,Buccaneer's Pirate Fort
+8,c8,p2,Dollshouse,Bella's House with Furniture
+,c8,p13,Castles,Three Wishes Castle
+,c8,p14,Castles,Siege Tower Red
+,c8,p8,Dollshouse,Nursery Set
+,c8,p6,Dollshouse,Lavender House NEW
+,c8,p7,Dollshouse,Sweetheart Cottage with Furniture NEW
+9,c9,p9,Castles,Camelot Castle Red
+,c9,p10,Castles,Excalibur Castle Blue
+,c9,p11,Castles,Lionheart Castle
+,c9,p12,Castles,Fairybelle Palace
+,c9,p13,Castles,Three Wishes Castle
+,c9,p14,Castles,Siege Tower Red
+,c9,p15,Castles,Trebuchet
+10,c10,p24,Pirateships,Buccaneer's Pirate Fort
+,c10,p23,Pirateships,Pirate Adventure!
+,c10,p9,Castles,Camelot Castle Red
+11,c11,p14,Castles,Siege Tower Red
+,c11,p15,Castles,Trebuchet
+,c11,p28,Pirateships,Moby Dick
+,c11,p25,Pirateships,Jolly Pirate Ship
+12,c12,p12,Castles,Fairybelle Palace
+,c12,p13,Castles,Three Wishes Castle
+,c12,p6,Dollshouse,Lavender House NEW
+,c12,p7,Dollshouse,Sweetheart Cottage with Furniture NEW
+13,c13,p26,Pirateships,Ghost Ship
+,c13,p28,Pirateships,Moby Dick
+,c13,p11,Castles,Lionheart Castle
+,c13,p10,Castles,Excalibur Castle Blue
+14,c14,p18,Honeybake,Cash Register
+,c14,p21,Honeybake,Trinket Boxes
+15,c15,p23,Pirateships,Pirate Adventure!
+,c15,p9,Castles,Camelot Castle Red
+,c15,p10,Castles,Excalibur Castle Blue
+16,c16,p7,Dollshouse,Sweetheart Cottage with Furniture NEW
+,c16,p12,Castles,Fairybelle Palace
+,c16,p13,Castles,Three Wishes Castle
+,c16,p4,Dollshouse,Sweetheart Cottage with Furniture
+17,c17,p24,Pirateships,Buccaneer's Pirate Fort
+,c17,p25,Pirateships,Jolly Pirate Ship
+,c17,p9,Castles,Camelot Castle Red
+18,c18,p9,Castles,Camelot Castle Red
+,c18,p10,Castles,Excalibur Castle Blue

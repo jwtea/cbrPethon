@@ -1,0 +1,11 @@
+Order ID,Customer ID,Category,Product Name,Order Date,Amount,Stockist Type
+1,c1,Dollshouse,My First Dream House with Furniture,11/05/2012,15,Large
+2,c2,Castles,Camelot Castle Red,15/01/2013,30,Large
+3,c1,Dollshouse,Lavender House ,16/01/2013,20,Large
+4,c8,Castles,Lionheart Castle,11/05/2014,5,Large
+5,c10,Pirateships,Buccaneer's Pirate Fort,10/05/2014,15,Large
+6,c5,Honeybake,Camper Mini Stove Set,11/07/2014,10,Medium
+7,c4,Pirateships,Jolly Pirate Ship,09/08/2014,25,Medium
+8,c10,Castles,Fairybelle Palace,10/05/2014,30,Large
+9,c5,Dollshouse,Lavender House ,02/12/2014,45,Medium
+10,c5,Honeybake,Cash Register,02/12/2014,45,Medium
