@@ -21,6 +21,8 @@ def main():
 	orderSimilarity = {}
 	 
 	custID = custEntry.get()
+	custType = fileOps.getStockistType("c"+custID)
+	print custType
 	print '++=========++' 
 	for key, prods in orders.iteritems():
 		if "c" + custID == key:
@@ -45,23 +47,25 @@ def main():
 			print "  Number of extra products: " + str(len(extraProducts))		
 			print "  Number of similar products: " + str(len(similarProducts))
 	 
-			if(len(similarProducts)!= 0 and len(extraProducts)):
+			if(len(similarProducts)!= 0 and len(extraProducts)!=0):
 				temp1 = len(similarProducts)*len(similarProducts)
 				temp2 = len(prods)*len(prods)
 				sim = math.sqrt(float(temp1)/float(temp2))
 				orderSimilarity[key] = sim 
 	 
 	print "-----"
-	#text.insert(INSERT,"Summary for customer c"+custID)
-	#text.insert(END,"-----")
 	summaryLabelVar.set("Summary for customer c" + custID)
 	summaryLabelVar2.set("Number of similar orders: " + str(len(orderSimilarity)))
 	mostSimOrder = 0
 	for key, sim in orderSimilarity.iteritems():
 		if sim > mostSimOrder:
 			mostSimOrder = sim
-		keyToSearch = key
-	summaryLabelVar3.set("The most Similar order is ["+key+"] = " + str(sim))
+			keyToSearch = key
+	summaryLabelVar3.set("The most Similar order is ["+keyToSearch+"] = " + str(mostSimOrder))
+	#Stockist Type sim
+	mostSimType = fileOps.getStockistType(keyToSearch)
+	stockistSim = stockist[custType][mostSimType]
+
 	#print "probability of wanting the extra item:"
 	for key, prods in orders.iteritems():
 		if key == keyToSearch:
@@ -91,7 +95,6 @@ def main():
 					for extraProd in extraProducts:
 						newOrderDict.setdefault("c"+custID, [])
 						newOrderDict["c"+custID].append(extraProd)
-
 	print "========="
 	suggestLabelVar.set("Suggesting new order of:"+str(newOrderDict))
 	suggestLabelVar2.set("Order Ok ?:")

@@ -21,6 +21,29 @@ def openCsvDebug(filename):
 			if row['Customer ID'] == "":
 				data[key].append(row['prodID'])
 	return data
+def openCsvDebugAmount(filename):
+	data = {}
+	with open("C:/Python27/pythoncbr/data/"+filename,"rb") as f:
+		reader = csv.DictReader(f)
+		for row in reader:
+			if row['Customer ID'] != "":
+				key = row['Customer ID']
+				temp = [row['prodID'],row['Amount']]
+				data.setdefault(key, [])
+				data[key].append(temp)
+			if row['Customer ID'] == "":
+				temp = [row['prodID'],row['Amount']]
+				data[key].append(temp)
+	return data	
+def getStockistType(ID):
+	data = {}
+	with open("C:/Python27/pythoncbr/data/casesDebug.csv","rb") as f:
+		reader = csv.DictReader(f,delimiter = ",")
+		for row in reader:
+			if row['Customer ID'] != "":
+				if ID == row['Customer ID']:
+					data=row['Stockist Type']
+	return data
 def getProductCat(prodID):
 	with open("C:/Python27/pythoncbr/data/products.csv","rb") as f:
 		reader = csv.DictReader(f,delimiter = ",")
@@ -62,6 +85,14 @@ def getNextOrderID():
 				data = row['Order ID']
 				print data
 	return data
+def writeRecordQuant(data,temp,stockistType):
+	with open('C:/Python27/pythoncbr/data/casesDebug.csv', 'a') as f:
+	    writer = csv.writer(f,lineterminator='\n')
+	    for key, values in data.items():
+	    	for value in values[0:1]:
+	       	 	writer.writerow([temp,key, value[0],value[1],stockistType])
+	        for value in values[1:]:
+	            writer.writerow([None,None, value[0],value[1]])	
 def writeRecord(data,temp):
 	with open('C:/Python27/pythoncbr/data/casesDebug.csv', 'a') as f:
 	    writer = csv.writer(f,lineterminator='\n')

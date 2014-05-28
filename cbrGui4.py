@@ -3,58 +3,66 @@ from Tkinter import *
 from simMetrics import *
 from collections import defaultdict
 products = fileOps.openCsv("products.csv")
-orders = fileOps.openCsvDebug("casesDebug.csv")
-orderDebug = fileOps.openCsvDebug("casesDebug.csv")
+
 newOrderDict = {}
 customerProducts = []
+prodArr = []
+amountArr = []
 orderSimilarity = {}
 similarityThreshold = 0.3
+
 #similarityThreshold = raw_input('Enter threshold:')
 state = 1
 
 #Iterate over the CSV. 
 def main():
+	orders = fileOps.openCsvDebugAmount("casesDebug.csv")
 	forgetFrames()
 	global newOrderDict
 	newOrderDict = {}
-	customerProducts = []
+	customerProducts[:] = []
+	customerProductsSet = set()
 	orderSimilarity = {}
 	 
 	custID = custEntry.get()
+	custType = fileOps.getStockistType("c"+custID)
+	print custType
+	print '++=========++' 
 	for key, prods in orders.iteritems():
-	 
 		if "c" + custID == key:
-			
-			#Once we've find the customer, we've got our list of products and can break the loop.
-			customerProducts = prods
-			print customerProducts
+			for prod in prods:
+				print prod[0]
+		#Once we've find the customer, we've got our list of products and can break the loop.
+				customerProducts.append(prod[0])
+				print "+++"+str(customerProducts)
+
 	 
 	print '----------'
 
 	for key, prods in orders.iteritems():
 	 
 		if custID != key:
-			customerProducts = set(customerProducts)
-			prods = set(prods)
-	 
-			extraProducts = customerProducts ^ prods	#Xor
-			extraProducts = prods & extraProducts
-	 		similarProducts = prods & customerProducts	#interseciton
+			prodArr[:] = []
+			customerProductsSet = set(customerProducts)
+			for prod in prods:
+				prodArr.append(prod[0])
+			prodSet = set(prodArr)
+			extraProducts = customerProductsSet ^ prodSet	#Xor
+			extraProducts = prodSet & extraProducts
+	 		similarProducts = prodSet & customerProductsSet	#interseciton
 			#Output
 			print ""
 			print "Checking customer " + str(key)
 			print "  Number of extra products: " + str(len(extraProducts))		
 			print "  Number of similar products: " + str(len(similarProducts))
 	 
-			if(len(similarProducts)!= 0 and len(extraProducts) != 0):
+			if(len(similarProducts)!= 0 and len(extraProducts)!=0):
 				temp1 = len(similarProducts)*len(similarProducts)
-				temp2 = len(prods)*len(prods)
+				temp2 = len(prodSet)*len(prodSet)
 				sim = math.sqrt(float(temp1)/float(temp2))
 				orderSimilarity[key] = sim 
 	 
 	print "-----"
-	#text.insert(INSERT,"Summary for customer c"+custID)
-	#text.insert(END,"-----")
 	summaryLabelVar.set("Summary for customer c" + custID)
 	summaryLabelVar2.set("Number of similar orders: " + str(len(orderSimilarity)))
 	mostSimOrder = 0
@@ -63,20 +71,29 @@ def main():
 			mostSimOrder = sim
 			keyToSearch = key
 	summaryLabelVar3.set("The most Similar order is ["+keyToSearch+"] = " + str(mostSimOrder))
+	#Stockist Type sim
+	mostSimType = fileOps.getStockistType(keyToSearch)
+	stockistSim = stockist[custType][mostSimType]
+	#clear arrays
+	prodArr[:] = []
+	amountArr[:] = []
 	#print "probability of wanting the extra item:"
 	for key, prods in orders.iteritems():
 		if key == keyToSearch:
-			prods = set(prods)
-			extraProducts = prods ^ customerProducts
-			extraProducts = prods & extraProducts
+			for prod in prods:
+				prodArr.append(prod[0])
+			prodSet = set(prodArr)
+			extraProducts = prodSet ^ customerProductsSet
+			extraProducts = prodSet & extraProducts
 			print "Extra Products " + str(extraProducts)
-			similarProducts = prods & customerProducts
+			similarProducts = prodSet & customerProductsSet
+
 			if len(extraProducts) != 0:
 				if v.get() == 0:
+					#get amounts
 					for extraProd in extraProducts:
 						extraProdCat = fileOps.getProductCat(extraProd)
 						extraProdSim = 0
-
 						for simProd in similarProducts:
 							simProdCat = fileOps.getProductCat(simProd)
 							extraProdSim += category[simProdCat][extraProdCat]
@@ -84,20 +101,25 @@ def main():
 						extraProdSim = extraProdSim / len(similarProducts)
 						print "sim for :" + extraProd + ":"+ str(extraProdSim)
 						if extraProdSim > similarityThreshold:
-							key = "n1"
-							
-							newOrderDict.setdefault(key, [])
-							newOrderDict[key].append(extraProd)
+							newOrderDict.setdefault("c"+custID, [])
+							for prod in prods:
+								if prod[0] == extraProd:
+									amountArr.append(int(float(prod[1])*stockistSim))
+									newOrderDict["c"+custID].append([extraProd,int(float(prod[1])*stockistSim)])
 							#print "_______________"
 							#print newOrderDict
 				else:
 					for extraProd in extraProducts:
-						key = "n1"
-						newOrderDict.setdefault(key, [])
-						newOrderDict[key].append(extraProd)
-
+						newOrderDict.setdefault("c"+custID, [])
+						for prod in prods:
+							if prod[0] == extraProd:
+								amountArr.append(int(float(prod[1])*stockistSim))
+								newOrderDict["c"+custID].append([extraProd,int(float(prod[1])*stockistSim)])
+						
+						
 	print "========="
-	suggestLabelVar.set("Suggesting new order of:"+str(newOrderDict['n1']))
+	print str(amountArr)
+	suggestLabelVar.set("Suggesting new order of:"+str(newOrderDict))
 	suggestLabelVar2.set("Order Ok ?:")
 	summaryFrame.pack()
 	ordOptionsFrame.pack()
@@ -109,17 +131,23 @@ def forgetFrames():
 	ordOptionsFrame.pack_forget()
 	editFrame.pack_forget()
 def writeOrd():
+	if state == 0:
+		customerType = custTypeVar.get()
+	else:
+		for key in newOrderDict:
+			custKey = key
+			customerType = fileOps.getStockistType(custKey)
 	print "Writing new order to file"
 	print "-------------------------"
 	print newOrderDict
 	temp = int(fileOps.getNextOrderID())
 	temp = str(temp+1)
-	fileOps.writeRecord(newOrderDict,temp)
+	fileOps.writeRecordQuant(newOrderDict,temp,customerType)
 	summaryLabelVar.set("New Order Saved")
 	newCustProductsVar.set("")
-	if(state == 0):
+	if state == 0:
 		addOrder()
-	if(state == 1):
+	if state == 1:
 		showMain()
 def addProd():
 	global newOrderDict
@@ -127,20 +155,36 @@ def addProd():
 	present = False
 	updatedOrder = {}
 	add = eVar.get()
-	print add
+	splitted = add.split(",")
 	for key, values in newOrderDict.items():
 		updatedOrder.setdefault(key, [])
 	        for value in values:
 	            updatedOrder[key].append(value)
-	            if value == add:
+	            if value[0] == splitted[0]:
 	            	present = True
 	        if present != True:
-	        	updatedOrder[key].append(add)
+	        	updatedOrder[key].append(splitted)
 	newOrderDict = updatedOrder
 	suggestLabelVar.set("Suggesting new order of:"+str(newOrderDict))
 	newCustProductsVar.set(str(newOrderDict))
 	print newOrderDict
-
+def changeProd():
+	global newOrderDict
+	print "newOrder"+str(newOrderDict)
+	remove = eVar.get()
+	splitted = remove.split(",")
+	updatedOrder = {}
+	for key, values in newOrderDict.items():
+		updatedOrder.setdefault(key, [])
+	        for value in values:
+	            if value[0] == splitted[0]:
+	            	updatedOrder[key].append(splitted)
+	            else:
+	            	updatedOrder[key].append(value)
+	newOrderDict = updatedOrder
+	suggestLabelVar.set("Suggesting new order of:"+str(newOrderDict))
+	newCustProductsVar.set(str(newOrderDict))
+	print "-----"
 def removeProd():
 	global newOrderDict
 	print "newOrder"+str(newOrderDict)
@@ -149,8 +193,9 @@ def removeProd():
 	for key, values in newOrderDict.items():
 		updatedOrder.setdefault(key, [])
 	        for value in values:
-	            if value != remove:
-	            		updatedOrder[key].append(value)
+	            if value[0] != remove:
+	            	print value
+	            	updatedOrder[key].append(value)
 	newOrderDict = updatedOrder
 	suggestLabelVar.set("Suggesting new order of:"+str(newOrderDict))
 	newCustProductsVar.set(str(newOrderDict))
@@ -170,6 +215,14 @@ def getNextCustID():
 	temp = temp + 1
 	temp = 'c' + str(temp)
 	return temp
+def lookUpProduct():
+	productInfo = fileOps.getProductInfo(prodLvar.get())
+	print productInfo
+	prodName.set("Name:"+productInfo['Name'])
+	prodCat.set("Category:"+productInfo['Category'])
+	prodPrice.set("Price:"+productInfo['Price'])
+	prodSize.set("Size:"+productInfo['Size'])
+
 #states
 def addOrder():
 	global newOrderDict
@@ -182,6 +235,8 @@ def addOrder():
 	summaryFrame.pack_forget()
 	ordOptionsFrame.pack_forget()
 	editFrame.pack_forget()
+	productLookupFrame.pack(side=BOTTOM)
+	productLookupResults.pack(side=BOTTOM)
 
 	newCustIdVar.set("New Customer Order :"+getNextCustID())
 	key = getNextCustID()
@@ -198,6 +253,8 @@ def showOptions():
 	summaryFrame.pack_forget()
 	ordOptionsFrame.pack_forget()
 	editFrame.pack_forget()
+	productLookupFrame.pack_forget()
+	productLookupResults.pack_forget()
 
 def showMain():
 	global state
@@ -209,6 +266,8 @@ def showMain():
 	summaryFrame.pack_forget()
 	ordOptionsFrame.pack_forget()
 	editFrame.pack_forget()
+	productLookupFrame.pack(side=BOTTOM)
+	productLookupResults.pack(side=BOTTOM)
 #Setup Gui
 cbrGui = Tk()
 cbrGui.title("Python CBR")
@@ -226,7 +285,7 @@ optionsMenu.add_command(label = "Configure",command=showOptions)
 #Add order frame 
 newCustIdVar = StringVar() #get the last var 
 newCustProductsVar = StringVar()
-
+custTypeVar = StringVar()
 #Configure
 v = IntVar()
 v1 = IntVar()
@@ -243,6 +302,12 @@ output = StringVar()
 #Edit Var
 removeLabelVar = StringVar()
 eVar = StringVar()
+#productLookup 
+prodLvar = StringVar()
+prodName = StringVar()
+prodCat = StringVar()
+prodPrice = StringVar()
+prodSize = StringVar()
 #Frames
 #------
 #Add order frame 
@@ -250,7 +315,9 @@ newOrderFrame = Frame(cbrGui)
 newOrderFrameLabel = Label(newOrderFrame, textvariable = newCustIdVar).pack()
 newOrderFrameLabel1 = Label(newOrderFrame, text="Products:").pack()
 newOrderFrameLabel2 = Label(newOrderFrame, textvariable = newCustProductsVar).pack()
-
+newOrderFrameLabel1 = Label(newOrderFrame, text="Stockist Type:").pack(side=LEFT)
+addOrderProd = Entry(newOrderFrame,textvariable = custTypeVar).pack(side=LEFT)
+newOrderFrameLabel1 = Label(newOrderFrame, text="Products to add:").pack(side=LEFT)
 addOrderProd = Entry(newOrderFrame,textvariable = eVar).pack(side=LEFT)
 addOrderBut = Button(newOrderFrame,text = "Remove", command = removeProd).pack(side=LEFT)
 addOrderBut2 = Button(newOrderFrame,text = "Add", command = addProd).pack(side=LEFT)
@@ -287,6 +354,20 @@ editFrame = Frame(cbrGui)
 removeLabel = Label(editFrame, textvariable = removeLabelVar).pack()
 removeE = Entry(editFrame,textvariable = eVar).pack(side=LEFT)
 removeButton = Button(editFrame,text = "Remove", command = removeProd).pack(side=LEFT)
+removeButton = Button(editFrame,text = "Change Quantity", command = changeProd).pack(side=LEFT)
 addButton = Button(editFrame,text = "Add", command = addProd).pack(side=LEFT)
+#ProductLookup
+productLookupFrame = Frame(cbrGui)
+productLookupFrame.pack(side=BOTTOM)
+productLookupLabel = Label(productLookupFrame, text="Enter product to lookup").pack()
+productLookupE = Entry(productLookupFrame,textvariable = prodLvar).pack(side=LEFT)
+productLookupButton = Button(productLookupFrame,text = "Lookup", command = lookUpProduct).pack(side=LEFT)
+#lookupResults
+productLookupResults = Frame(cbrGui)
+productLookupResults.pack(side=BOTTOM)
+productLookupName = Label(productLookupResults, textvariable = prodName).pack()
+productLookupCat = Label(productLookupResults, textvariable = prodCat).pack()
+productLookupPrice = Label(productLookupResults, textvariable = prodPrice).pack()
+productLookupSize= Label(productLookupResults, textvariable = prodSize).pack()
 cbrGui.mainloop()
 

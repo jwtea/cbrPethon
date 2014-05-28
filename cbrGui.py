@@ -46,7 +46,7 @@ def main():
 			print "  Number of extra products: " + str(len(extraProducts))		
 			print "  Number of similar products: " + str(len(similarProducts))
 	 
-			if(len(similarProducts)!= 0 and len(extraProducts)):
+			if(len(similarProducts)!= 0 and len(extraProducts)!=0):
 				temp1 = len(similarProducts)*len(similarProducts)
 				temp2 = len(prods)*len(prods)
 				sim = math.sqrt(float(temp1)/float(temp2))
@@ -59,10 +59,12 @@ def main():
 	summaryLabelVar2.set("Number of similar orders: " + str(len(orderSimilarity)))
 	mostSimOrder = 0
 	for key, sim in orderSimilarity.iteritems():
+		print "key:"+str(key)
+		print "sim:"+str(sim)
 		if sim > mostSimOrder:
 			mostSimOrder = sim
-		keyToSearch = key
-	summaryLabelVar3.set("The most Similar order is ["+key+"] = " + str(sim))
+			keyToSearch = key
+	summaryLabelVar3.set("The most Similar order is ["+keyToSearch+"] = " + str(mostSimOrder))
 	#print "probability of wanting the extra item:"
 	for key, prods in orders.iteritems():
 		if key == keyToSearch:
